@@ -1,0 +1,26 @@
+# --- Local Claude Code overrides (never commit) ---
+.claude/settings.local.json
+**/CLAUDE.local.md
+.claude/.credentials.json
+.claude/projects/
+.claude/sessions/
+.claude/worktrees/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
+
+# --- Carried into downstream projects (build artifacts) ---
+node_modules/
+dist/
+build/
+.next/
+coverage/
+*.log
+.env
+.env.*
+!.env.example

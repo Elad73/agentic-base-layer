@@ -1,0 +1,68 @@
+// settings.example.jsonc — ANNOTATED reference for .claude/settings.json
+// -----------------------------------------------------------------------------
+// settings.json is STRICT JSON and cannot hold comments, so the explanations
+// live here. Copy the structure (without comments) into settings.json and adapt.
+//
+// KEY RULE FOR HOOKS: a hook can BLOCK the action it fires on ONLY by exiting
+// with code 2. Any other non-zero exit is surfaced as an error but does NOT
+// block. Exit 0 = allow/continue. Keep blocking hooks deliberate and rare.
+// -----------------------------------------------------------------------------
+{
+  // Pre-approve safe, read-mostly commands so the agent isn't prompted constantly.
+  // Keep this list tight and project-appropriate; never allow destructive globs.
+  "permissions": {
+    "allow": [
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
+      // add «PROJECT-VERIFY-CMD» pieces, e.g. "Bash(npm run test:*)"
+    ],
+    "deny": [],   // hard blocks, e.g. "Bash(rm -rf:*)"
+    "ask": []     // always prompt, e.g. "Bash(gh pr merge:*)"
+  },
+
+  "hooks": {
+    // SessionStart: fires once when a session begins. SAFE example — just prints
+    // a reminder. Replace with a real status read if desired. Never block here.
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo 'Session start: read .claude/WORKFLOW.md and «PROJECT-STATUS-FILE» before acting.'"
+          }
+        ]
+      }
+    ],
+
+    // PostToolUse: fires AFTER a tool runs. "matcher" limits it to Edit/Write so
+    // we auto-format only files Claude just touched. This stub is intentionally
+    // non-blocking: the script always exits 0 (see .claude/hooks/auto-format.sh).
+    // Wire it to your formatter (prettier, ruff, gofmt, …).
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/auto-format.sh"
+          }
+        ]
+      }
+    ]
+
+    // OPTIONAL — a BLOCKING PreToolUse secret guard. Uncomment to use.
+    // The script must `exit 2` to actually block the tool call; anything else
+    // lets it through. This is the one place exit code 2 matters most.
+    // ,"PreToolUse": [
+    //   {
+    //     "matcher": "Bash",
+    //     "hooks": [
+    //       { "type": "command", "command": ".claude/hooks/block-secrets.sh" }
+    //     ]
+    //   }
+    // ]
+  }
+}
