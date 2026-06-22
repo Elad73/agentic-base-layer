@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 # ============================================================================
-# new-project.sh — bootstrap a new project from the Agentic Base Layer.
+# new-project.sh — scaffold a new project from the Agentic Base Layer.
 #
-# Copies the reusable payload (.claude/ + the CLAUDE.md seed) into a target
-# directory and initializes a fresh git repo there. The base repo is never
-# modified — every change you make afterwards belongs to the new project.
+# Copies the per-project starter (project-seed/) — the CLAUDE.md seed, knowledge
+# scaffold, rules, docs skeleton — into a target dir and `git init`s it. Also drops
+# the shared conventions (WORKFLOW.md, CONTEXT-PASSING.md) into the project's .claude/
+# so the agents/commands resolve them locally even without a global install.
+#
+# The reusable engine (agents/skills/commands) is NOT copied per project — install it
+# once globally with ./install.sh. The base repo never changes from project work.
 #
 #   Usage:  bin/new-project.sh <target-dir> [project-name]
-#   e.g.    bin/new-project.sh ~/projects/my-app my-app
 # ============================================================================
 set -euo pipefail
 
@@ -15,21 +18,17 @@ BASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TARGET="${1:?Usage: new-project.sh <target-dir> [project-name]}"
 NAME="${2:-$(basename "$TARGET")}"
 
-if [ -e "$TARGET/.claude" ]; then
-  echo "⛔ $TARGET/.claude already exists — refusing to overwrite." >&2
+if [ -e "$TARGET/.claude" ] || [ -e "$TARGET/CLAUDE.md" ]; then
+  echo "⛔ $TARGET already has .claude/ or CLAUDE.md — refusing to overwrite." >&2
   exit 1
 fi
 
 mkdir -p "$TARGET"
-
-# Copy the PAYLOAD only — never the framework's own meta/ docs or bin/.
-cp -R "$BASE_DIR/.claude"   "$TARGET/.claude"
-cp    "$BASE_DIR/CLAUDE.md" "$TARGET/CLAUDE.md"
+cp -R "$BASE_DIR/project-seed/." "$TARGET/"
+# shared conventions, so project-relative .claude/WORKFLOW.md references resolve
+cp "$BASE_DIR/global/WORKFLOW.md"        "$TARGET/.claude/WORKFLOW.md"
+cp "$BASE_DIR/global/CONTEXT-PASSING.md" "$TARGET/.claude/CONTEXT-PASSING.md"
 [ -f "$BASE_DIR/.gitignore" ] && cp "$BASE_DIR/.gitignore" "$TARGET/.gitignore"
-
-# Drop the base's seed knowledge entries — a new project starts its own registry.
-# (Comment out the next line if you want to inherit the example entries.)
-# : > "$TARGET/.claude/knowledge/REGISTRY.md"
 
 cd "$TARGET"
 git init -q
@@ -40,6 +39,7 @@ cat <<EOF
 Next steps:
   1. cd $TARGET
   2. Edit CLAUDE.md — fill in the «PLACEHOLDERS» (product, stack, invariants).
-  3. git add -A && git commit -m "chore: scaffold project from agentic base layer"
-  4. Build: /wake-up → /feature … → /wrap-up
+  3. Make sure the engine is installed globally:  $BASE_DIR/install.sh
+  4. git add -A && git commit -m "chore: scaffold project from agentic base layer"
+  5. Build:  /wake-up → /feature … → /wrap-up
 EOF

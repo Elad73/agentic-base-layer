@@ -596,7 +596,10 @@ subdir/CLAUDE.md     <span class="c">(loads ON DEMAND)</span>
     <div class="eyebrow">Start using it</div>
     <h2>Adopt Agentic Base Layer in a new project</h2>
     <div class="panel" style="font-size:13px">
-<span class="c"># 1 · bootstrap a new project from the base (copies .claude/ + CLAUDE.md, git init)</span>
+<span class="c"># 1 · install the engine globally — live in EVERY project</span>
+<span class="s">./install.sh</span>          <span class="c"># symlinks global/* into ~/.claude (or $CLAUDE_CONFIG_DIR)</span>
+
+<span class="c"># 1b · scaffold a project (CLAUDE.md seed + knowledge/docs), git init</span>
 <span class="s">bin/new-project.sh</span> ~/projects/my-app my-app
 
 <span class="c"># 2 · fill in CLAUDE.md «PLACEHOLDERS» (or keep your existing one as the contract)</span>
