@@ -98,6 +98,7 @@ Non-default commands Claude can't guess:
 - **Feature branch + PR, never direct to `main`.** Full lifecycle: `.claude/WORKFLOW.md`.
 - Use the commands: `/wake-up` (start) · `/feature` or `/bug-fix` (work) · `/wrap-up` or `/station` (end).
 - **Commit messages: never mention "claude" or "Anthropic".** Conventional-commit style.
+- **NEVER commit sensitive data — scan the diff before every commit.** Check for **secrets** (keys, tokens, passwords, `.env`, `*.pem`/`*.key`) **and** personal/identifying data (real emails, names, unreleased or private project names, home paths like `/home/...` or `/Users/...`, internal URLs). For **public repos**, review the full diff before pushing — a leaked email or private project name is effectively permanent once pushed (it survives a force-push via the old commit SHA). Note: the `/pre-ship` and `/wrap-up` secret scan catches keys/tokens, **not** personal data — do that check yourself.
 - Ship the **smallest runnable slice first** — earliest end-to-end path that does something real; widen later.
 
 ---
