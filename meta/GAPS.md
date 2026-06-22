@@ -1,6 +1,6 @@
 # Agentic Base Layer — Gaps Found & Filled
 
-What was broken, missing, or inconsistent across your six projects, and how Agentic Base Layer resolves each. Grouped by severity.
+What was broken, missing, or inconsistent across the six source projects, and how Agentic Base Layer resolves each. Grouped by severity. Sections A–C are the source-project audit (valid history); §E tracks items resolved in the v0.2.0 restructure; §D lists what's genuinely still open.
 
 ## A. Defects fixed during extraction (were real bugs)
 
@@ -23,7 +23,7 @@ What was broken, missing, or inconsistent across your six projects, and how Agen
 |---|---|---|
 | **No enforcement layer** — rules lived only as prose; the music project measured ~10% compliance with "MUST consult" | Prose can't enforce; only hooks/gates can | Ship `settings.json` hooks + `pre-ship` gates as the deterministic layer; doc the "exit code 2 blocks" rule. |
 | **No context-budget discipline** documented | Long sessions hit context rot; CLAUDE.md bloat reduces adherence | `meta/REFERENCE.md` + the presentation teach progressive disclosure, the 200-line CLAUDE.md target, `/clear` & `/compact`, subagent isolation. |
-| **No authoring standard for new assets** | Each project reinvented agent/skill shape | `templates/` + the two meta-skills (`authoring-skills`, `authoring-subagents`). |
+| **No authoring standard for new assets** ✅ | Each project reinvented agent/skill shape | ✅ **RESOLVED (v0.2.0):** full `create-*` router skills (`create-agent-skills`, `create-subagents`, `create-slash-commands`, `create-hooks`, `create-meta-prompts`, `create-plans`, `debug-like-expert`) — each with bundled references/templates/workflows — replaced the thin meta-skills. Plus FEATURE/BUG templates in the seed. |
 | **Knowledge registries shipped empty** (base-team's was "No entries yet") | Value only accrues from real use | Schema + 3 self-documenting example entries; adoption guide says "seed it from your audit findings day one". |
 | **No "right altitude" guidance** for prompts | Agents were either too brittle (hardcoded) or too vague | Meta-skills + presentation encode the Goldilocks principle. |
 | **No modern features adopted** — none used path-scoped `rules/`, `disable-model-invocation`, `context: fork`, tool-search | Newer Claude Code features cut context cost materially | Kit demonstrates `rules/`, `disable-model-invocation`, and the reference doc covers fork/tool-search/programmatic-tool-calling. |
@@ -39,10 +39,29 @@ Not everything was a gap — these home-grown patterns are genuinely strong and 
 - **`station` composition** — chaining session-hygiene skills into one verb.
 - **Backup-before-migration + add-then-delete test safety** — operational wisdom worth keeping.
 
-## D. Open items for you (not auto-fixable)
+## D. Open items (not auto-fixable)
 
 1. ~~Pick the name~~ ✅ **Decided: `Agentic Base Layer`** (see README §1).
-2. **Choose the task backend** per project (filesystem Kanban vs GitHub Issues).
-3. **Refresh or retire** the `anthropic-claude-api` skill before reusing it.
-4. **Decide on stack packs** — which domain skills to bundle for your project's stack.
-5. **Seed `knowledge/REGISTRY.md`** with your project's real lessons to make the loop live.
+2. ~~No global-install path~~ ✅ **RESOLVED (v0.2.0):** see §E.
+3. ~~No authoring standard~~ ✅ **RESOLVED (v0.2.0):** see §B / §E.
+4. **Choose the task backend** per project (filesystem Kanban vs GitHub Issues).
+5. **Refresh or retire** the `anthropic-claude-api` skill before reusing it.
+6. **Decide on stack packs** — which domain skills to bundle for your project's stack.
+7. **Seed `knowledge/REGISTRY.md`** with your project's real lessons to make the loop live.
+8. **Plugin / marketplace distribution** — the kit currently ships as a GitHub *template* repo + global install; a Claude Code plugin/marketplace package remains a future option, not yet built.
+9. **Two over-long skills** — a couple of the lifecycle/router skills run past the ~500-line body target; worth a split/trim pass.
+
+## E. Resolved in the v0.2.0 restructure
+
+The hybrid (global + per-project) restructure closed several gaps that were open at v0.1.0:
+
+| Item | Was | ✅ Resolution in v0.2.0 |
+|---|---|---|
+| **No global-install path** | Kit was a single `.claude/` at the repo root; nothing made it live across projects | `install.sh` symlinks (or `--copy`) `global/*` into `~/.claude` (honoring `$CLAUDE_CONFIG_DIR`) so the engine is live in every project and updatable via `git pull`. `bin/new-project.sh` seeds a standalone project from `project-seed/`. |
+| **No authoring standard** | Thin `authoring-skills` / `authoring-subagents` stand-ins only | Full `create-*` router skills with bundled references/templates/workflows (see §B). |
+| **Verbs advertised with `/` but skill-only did nothing** | `advise`, `document`, `retrospect`, `cleanup`, `station`, `pre-ship` (+ authoring/planning verbs) had no command, so `/advise` etc. were dead | Thin command wrappers added for every skill-only verb — the skill holds the logic, the command is a one-source-of-truth wrapper. |
+| **`block-secrets.sh` referenced but missing** | Hooks doc/settings referenced a secret-blocking hook that wasn't shipped | `block-secrets.sh` now ships in `project-seed/.claude/hooks/`. |
+| **4-field handoff contradiction** | `REGISTRY` said *Goal/Inputs/Constraints/Return*; canonical doc said *Task/Files/Context/Constraints* | Reconciled to the canonical `Task/Files/Context/Constraints` everywhere. |
+| **`pre-ship` skill frontmatter** | `allowed-tools: Bash Read` (one bogus token) | Fixed to `Bash, Read`. |
+| **`settings.json` placeholder leaked** | Live SessionStart printed the literal `«PROJECT-STATUS-FILE»` | Resolves to `docs/STATUS.md`. |
+| **`K-ARC-001` entry out of schema order** | Application appeared before Learning | Reordered to the `Context→Learning→Application→Metric` schema. |

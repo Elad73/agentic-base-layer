@@ -1,6 +1,6 @@
 # Agentic Base Layer — Asset Scoring
 
-Every reusable asset found across your six projects, scored on two axes and given a verdict.
+Every reusable asset found across the six source projects, scored on two axes and given a verdict. The tables below are the **source-project audit** (the history that produced the framework); §5–6 describe the framework's own current v0.2.0 shape.
 
 - **Reuse (1–10):** how cross-project / drop-in-portable it is (10 = generic, 1 = one-project-only).
 - **Quality (1–10):** how well-engineered the asset is on its own terms.
@@ -30,6 +30,8 @@ Scoring criteria for **agents**: single-responsibility, least-privilege tools, t
 
 **Reusable techniques lifted regardless of source:** consultant-vs-owner role split with tool-permission enforcement; read-only specialist returns a fixed-template BRIEF; sub-reviewer auto-detection by `git diff … | grep`; script-enforced AC-evidence gate with exit codes; rubric-scored review with numeric merge thresholds.
 
+> **Shipped roster (v0.2.0):** 10 agents in `global/agents/` across three tiers — **universal:** code-reviewer, security-reviewer, debugger (added — the universal tier the audit was missing), test-engineer (planner = Claude Code's built-in Plan agent); **SDLC spine:** orchestrator, product-manager, developer, release-gatekeeper; **on-demand domain** (spawned by `/review`): database-reviewer, design-reviewer.
+
 ---
 
 ## 2. Skills
@@ -54,6 +56,8 @@ Scoring criteria for **agents**: single-responsibility, least-privilege tools, t
 | **authoring-skills** (agent-skills-guide) | 9 | 9 | ADOPT | Progressive disclosure, trigger-rich descriptions, char limits, 4 craft principles. Corrected against current spec. |
 | **authoring-subagents** (subagents-guide) | 8 | 9 | ADOPT | Flat-file rule, frontmatter, isolated context, delegate-at-10-files. Corrected against current spec. |
 
+> **Shipped state (v0.2.0):** these two thin guides were replaced by a full **authoring router toolkit** in `global/skills/` — `create-agent-skills`, `create-subagents`, `create-slash-commands`, `create-hooks`, `create-meta-prompts`, `create-plans`, `debug-like-expert` — each a router skill with bundled references/templates/workflows (7 of the 15 shipped skills).
+
 ### Domain/reference skills (keep per-stack, not "base")
 | Skill | Reuse | Quality | Verdict | Notes |
 |---|:-:|:-:|---|---|
@@ -65,7 +69,7 @@ Scoring criteria for **agents**: single-responsibility, least-privilege tools, t
 | frontend-aesthetics | 4 | 6 | DROP | Hardcoded the briefing project dark tokens leaked into other projects. |
 | the finance app-design-system | 1 | 9 | DROP | Exceptional *mechanism* (progressive disclosure, live `file:line` examples, SCORECARD loop) but 100% project brand. Copy the **mechanism**, not the content. |
 
-> The 15+ domain skills are excellent but belong in optional **stack packs** (`packs/nextjs`, `packs/design`), not the universal base. Agentic Base Layer ships the lifecycle + meta skills; you add a pack per project.
+> The 15+ domain skills are excellent but belong in optional **stack packs** (`packs/nextjs`, `packs/design`), not the universal base. Agentic Base Layer ships the lifecycle + authoring (`create-*`) skills in `global/skills/`; you add a pack per project.
 
 ---
 
@@ -105,29 +109,39 @@ Scored as *should this be in a base CLAUDE.md template?* Anthropic guidance: kee
 
 ---
 
-## 5. `.claude/` folder components
+## 5. Framework structure components (v0.2.0)
 
-| Component | Reuse | Quality | Verdict | Notes |
-|---|:-:|:-:|---|---|
-| **knowledge/REGISTRY.md + advise/retrospect loop** | 10 | 9 | ADOPT ★ | **The single best asset across all projects.** Content-agnostic, append-only, compounding. the briefing project's populated version is the canonical schema. |
-| **CONTEXT-PASSING.md (4-field handoff)** | 10 | 9 | ADOPT ★ | Converged independently in all 3 orchestration repos — strongest signal of a real pattern. |
-| **templates/ (AGENT/SKILL/FEATURE/BUG)** | 9 | 8 | FIX | Standardize authoring + the "Lessons Learned → Add to Skill" hook. SKILL template **was missing frontmatter** → fixed. |
-| **WORKFLOW.md (lifecycle + Loop Recovery)** | 9 | 8 | FIX | Loop Recovery Protocol + Context Update Triggers are pure gold. Source had "5 vs 6 phase" drift → reconciled to one. |
-| **agents/ split (core / domain / custom)** | 8 | 8 | ADOPT | Clean tiering; reviewers read-only by tool scope. |
-| **hooks (settings.json)** | 8 | 7 | ADAPT | The real enforcement layer. Ship a *minimal safe* example (auto-format + context note); only exit code 2 blocks. |
-| **rules/ (path-scoped)** | 8 | 7 | ADOPT | Loads only when matching files touched → saves context vs. inlining in CLAUDE.md. |
-| **product/{todo,in-progress,done}** | 7 | 7 | ADOPT (opt-in) | Filesystem Kanban backend; or use GitHub Issues. |
-| **sessions/ (context_session)** | 6 | 6 | FIX | Living scratchpad. Source had naming drift (`context_` vs `content_`, `sessions/` vs `tasks/`) → standardized to `sessions/CURRENT-SESSION.md`. |
-| scripts/ (GH project-board sync) | 5 | 6 | ADAPT | Useful but every board ID was a `"TODO"` placeholder → needs per-project fill or drop. |
+Agentic Base Layer ships as **two payloads**, not a single `.claude/` at the repo root:
+
+- **`global/`** — the reusable engine, installed into your config home (`~/.claude`, honoring `$CLAUDE_CONFIG_DIR`) by `install.sh` (symlink, or `--copy`). Contains `agents/`, `skills/`, `commands/`, `WORKFLOW.md`, `CONTEXT-PASSING.md`. Live and updatable via `git pull`.
+- **`project-seed/`** — the per-project starter, copied by `bin/new-project.sh`. Contains the `CLAUDE.md` seed, `docs/STATUS.md`, and `.claude/` (`knowledge/REGISTRY.md`, `rules/`, `hooks/`, `templates/`, `settings.json` + `settings.example.jsonc`).
+
+The components below are scored as *should this be in the base?* — same rubric, mapped to where each now lives.
+
+| Component | Where it ships now | Reuse | Quality | Verdict | Notes |
+|---|---|:-:|:-:|---|---|
+| **knowledge/REGISTRY.md + advise/retrospect loop** | `project-seed/.claude/knowledge/` | 10 | 9 | ADOPT ★ | **The single best asset across all projects.** Content-agnostic, append-only, compounding. the briefing project's populated version is the canonical schema. |
+| **CONTEXT-PASSING.md (4-field handoff)** | `global/` | 10 | 9 | ADOPT ★ | Converged independently in all 3 orchestration repos — strongest signal of a real pattern. Now reconciled to the canonical `Task/Files/Context/Constraints` form everywhere. |
+| **templates/ (FEATURE/BUG)** | `project-seed/.claude/templates/` | 9 | 8 | FIX | Standardize authoring + the "Lessons Learned → Add to Skill" hook. (AGENT/SKILL authoring now lives in the `create-*` router skills.) |
+| **WORKFLOW.md (lifecycle + Loop Recovery)** | `global/` | 9 | 8 | FIX | Loop Recovery Protocol + Context Update Triggers are pure gold. Source had "5 vs 6 phase" drift → reconciled to one. |
+| **agents/ split (universal / SDLC spine / on-demand domain)** | `global/agents/` | 8 | 8 | ADOPT | Clean three-tier roster (+ `agents/README.md`); reviewers read-only by tool scope. |
+| **hooks (`auto-format.sh` + `block-secrets.sh`)** | `project-seed/.claude/hooks/` | 8 | 7 | ADAPT | The real enforcement layer. Ship a *minimal safe* pair (auto-format + secret block); only exit code 2 blocks. `block-secrets.sh` now shipped (was referenced-but-missing). |
+| **settings.json + settings.example.jsonc** | `project-seed/.claude/` | 8 | 7 | ADOPT | Live wiring of the hooks + a commented example to copy from. SessionStart now resolves `docs/STATUS.md` (was a literal placeholder). |
+| **rules/ (path-scoped)** | `project-seed/.claude/rules/` | 8 | 7 | ADOPT | Loads only when matching files touched → saves context vs. inlining in CLAUDE.md. |
+| **product/{todo,in-progress,done}** | opt-in per project | 7 | 7 | ADOPT (opt-in) | Filesystem Kanban backend; or use GitHub Issues. |
+| scripts/ (GH project-board sync) | optional pack | 5 | 6 | ADAPT | Useful but every board ID was a `"TODO"` placeholder → needs per-project fill or drop. |
 
 ★ = the two assets to adopt first if you adopt nothing else.
+
+**Distribution model:** GitHub *template* repo → global install (`install.sh`, live + `git pull`-updatable) for the engine + per-project seed (`bin/new-project.sh`) for the starter. A plugin/marketplace distribution remains a future option.
 
 ---
 
 ## 6. Headline numbers
 
-- **Inventoried:** ~30 agents · ~40 skills · ~24 commands · 6 CLAUDE.md files across 6 projects.
-- **Promoted to Agentic Base Layer base:** 9 agents · 10 skills (8 lifecycle + 2 meta) · 12 commands · 4 templates · knowledge registry · workflow + context-passing contracts · hooks + rules examples.
+- **Inventoried (source audit):** ~30 agents · ~40 skills · ~24 commands · 6 CLAUDE.md files across 6 projects.
+- **Ships in Agentic Base Layer v0.2.0:** **10 agents** (4 universal + 4 SDLC spine + 2 on-demand domain, with planner = Claude Code's built-in Plan agent) · **15 skills** (8 lifecycle + 7 authoring router skills) · **32 commands + 12 `consider/` mental models** · FEATURE/BUG templates · knowledge registry · `WORKFLOW.md` + `CONTEXT-PASSING.md` contracts · `auto-format.sh` + `block-secrets.sh` hooks + path-scoped rules example.
 - **Recommended as optional stack-packs:** ~15 domain skills.
 - **Dropped as project-specific/stale:** the finance app-design-system, frontend-aesthetics, marketing-strategist, audio-pipeline-reviewer, anthropic-claude-api (until refreshed).
-- **Defects fixed:** 7 classes (hardcoded paths, missing frontmatter ×2, copy-paste agent bug, stale models, persona-coupling, non-invokable skill, phase-count drift, session-naming drift).
+- **Kept private (personal/aesthetic, excluded from the public kit):** `cost-track`, `log-to-vault`, `workstation`, the `dispatch-design`/`taxonomy-design` skills, the `ui-designer`/`taxonomy-curator` agents, the `expertise/` domain packs, and personal `settings.json` hooks.
+- **Defects fixed:** 7 classes (hardcoded paths, missing frontmatter ×2, copy-paste agent bug, stale models, persona-coupling, non-invokable skill, phase-count drift, session-naming drift) — see GAPS.md.

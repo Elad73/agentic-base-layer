@@ -79,9 +79,9 @@
     <h1>Agentic Base Layer<span class="accent">.</span></h1>
     <p class="lead">The reusable layer of <strong>CLAUDE.md, subagents, skills, commands, workflows &amp; knowledge</strong> you clone into every project. Dotfiles — but for your AI agent.</p>
     <div style="margin-top:34px;display:flex;gap:10px;flex-wrap:wrap">
-      <span class="pill b-agent" style="color:#fff">9 agents</span>
-      <span class="pill b-skill" style="color:#fff">10 skills</span>
-      <span class="pill b-cmd" style="color:#fff">12 commands</span>
+      <span class="pill b-agent" style="color:#fff">10 agents</span>
+      <span class="pill b-skill" style="color:#fff">15 skills</span>
+      <span class="pill b-cmd" style="color:#fff">32 commands + 12 models</span>
       <span class="pill" style="background:var(--ink-panel);color:#fff;border:none">1 knowledge registry</span>
       <span class="pill" style="background:var(--sage);color:#fff;border:none">verified vs Anthropic docs</span>
     </div>
@@ -134,11 +134,11 @@
         <rect x="120" y="230" width="660" height="86" rx="14" fill="url(#kg)"/>
         <text x="150" y="262" font-size="20" font-weight="800" fill="#fff">►► Agentic Base Layer ◄◄</text>
         <text x="150" y="288" font-size="13.5" fill="#ece9fb">agents · skills · commands · workflow · knowledge registry · templates · hooks</text>
-        <text x="150" y="307" font-size="12" fill="#cfc8f5">the reusable base layer — YOURS</text>
+        <text x="150" y="307" font-size="12" fill="#cfc8f5">installed once into ~/.claude — seeds every project — YOURS</text>
 
         <rect x="120" y="326" width="660" height="60" rx="12" fill="#fff" stroke="#e3ded5"/>
         <text x="150" y="352" font-size="18" font-weight="700" fill="#1c1917">Project</text>
-        <text x="150" y="373" font-size="13" fill="#6b6256">your app, …  (the specific app)</text>
+        <text x="150" y="373" font-size="13" fill="#6b6256">your app — seeded with a CLAUDE.md + .claude/ starter  (the specific app)</text>
       </g>
       <!-- brace -->
       <text x="40" y="60" font-size="12" fill="#6b6256" font-family="var(--mono)">Anthropic</text>
@@ -453,32 +453,34 @@ subdir/CLAUDE.md     <span class="c">(loads ON DEMAND)</span>
 <section id="s12" data-t=".claude">
   <div class="reveal">
     <div class="eyebrow">Putting it together</div>
-    <h2>The <code>.claude/</code> folder, annotated</h2>
+    <h2>Two payloads, annotated</h2>
     <div class="grid g2" style="align-items:start">
       <div class="panel" style="font-size:12.5px">
-.claude/
-├── <span class="k">agents/</span>          <span class="c"># flat .md subagents</span>
-│   ├── orchestrator.md
-│   ├── code-reviewer.md  <span class="c"># read-only</span>
-│   └── …
-├── <span class="k">skills/</span>          <span class="c"># dir + SKILL.md each</span>
-│   ├── advise/  retrospect/  cleanup/
-│   └── authoring-skills/ <span class="c"># meta</span>
-├── <span class="k">commands/</span>        <span class="c"># /slash dispatchers</span>
-├── <span class="k">knowledge/</span>
-│   └── REGISTRY.md  <span class="c"># the learning DB</span>
-├── <span class="k">templates/</span>       <span class="c"># AGENT/SKILL/FEATURE/BUG</span>
-├── <span class="k">rules/</span>           <span class="c"># path-scoped, lazy</span>
-├── <span class="k">hooks/</span>           <span class="c"># enforcement</span>
-├── <span class="k">settings.json</span>    <span class="c"># hooks + permissions</span>
+<span class="c"># the repo ships TWO payloads</span>
+<span class="k">global/</span>             <span class="c"># the engine → installed into ~/.claude</span>
+├── <span class="k">agents/</span>          <span class="c"># 11 flat .md subagents</span>
+├── <span class="k">skills/</span>          <span class="c"># 15 dirs + SKILL.md each</span>
+├── <span class="k">commands/</span>        <span class="c"># /slash dispatchers + consider/</span>
 ├── <span class="k">WORKFLOW.md</span>      <span class="c"># the lifecycle</span>
 └── <span class="k">CONTEXT-PASSING.md</span> <span class="c"># 4-field handoff</span>
+
+<span class="k">project-seed/</span>       <span class="c"># copied per project</span>
+├── <span class="k">CLAUDE.md</span>        <span class="c"># seed contract «PLACEHOLDERS»</span>
+├── <span class="k">.claude/</span>
+│   ├── <span class="k">knowledge/</span>   <span class="c"># REGISTRY.md — the learning DB</span>
+│   ├── <span class="k">rules/</span>       <span class="c"># path-scoped, lazy</span>
+│   ├── <span class="k">hooks/</span>       <span class="c"># enforcement</span>
+│   ├── <span class="k">templates/</span>   <span class="c"># FEATURE / BUG</span>
+│   └── <span class="k">settings.json</span> <span class="c"># hooks + permissions</span>
+└── <span class="k">docs/STATUS.md</span>   <span class="c"># the changing prose</span>
+
+<span class="s">install.sh</span> · <span class="s">bin/new-project.sh</span> · <span class="k">meta/</span>  <span class="c"># scoring, gaps, this deck</span>
       </div>
       <div>
-        <div class="card"><h3>📁 agents · skills · commands</h3><p style="font-size:14px;margin:0">The three asset types. Flat files vs directories vs prompts — don't mix them up (slide 9).</p></div>
-        <div class="card" style="margin-top:12px"><h3>🧠 knowledge/ · templates/</h3><p style="font-size:14px;margin:0">The compounding memory + the standard for authoring new assets.</p></div>
-        <div class="card" style="margin-top:12px"><h3>⚙️ rules/ · hooks/ · settings.json</h3><p style="font-size:14px;margin:0">Context-thrift (lazy rules) + enforcement (hooks). The modern features your old projects never used.</p></div>
-        <div class="card" style="margin-top:12px"><h3>📄 docs/ (sibling)</h3><p style="font-size:14px;margin:0">STATUS.md, PRD, specs — the heavy, changing prose that does <em>not</em> belong in CLAUDE.md.</p></div>
+        <div class="card"><h3>🌐 global/ → ~/.claude</h3><p style="font-size:14px;margin:0"><code>install.sh</code> symlinks the engine (agents · skills · commands) into your config home — live in <em>every</em> project, updated by <code>git pull</code>.</p></div>
+        <div class="card" style="margin-top:12px"><h3>📦 project-seed/ → per project</h3><p style="font-size:14px;margin:0"><code>bin/new-project.sh</code> copies the CLAUDE.md seed + project-local <code>.claude/{knowledge,rules,hooks,templates,settings}</code> + <code>docs/STATUS.md</code>.</p></div>
+        <div class="card" style="margin-top:12px"><h3>🧠 knowledge/ · 🔒 hooks/</h3><p style="font-size:14px;margin:0">The compounding memory + deterministic enforcement live <em>with the project</em> — they capture and guard <em>that</em> app's reality.</p></div>
+        <div class="card" style="margin-top:12px"><h3>📄 docs/ (seeded)</h3><p style="font-size:14px;margin:0">STATUS.md, PRD, specs — the heavy, changing prose that does <em>not</em> belong in CLAUDE.md.</p></div>
       </div>
     </div>
   </div>
@@ -576,14 +578,14 @@ subdir/CLAUDE.md     <span class="c">(loads ON DEMAND)</span>
     <div class="eyebrow">What ships in Agentic Base Layer</div>
     <h2>The curated roster</h2>
     <div class="grid g3">
-      <div class="card"><span class="badge b-agent">9 AGENTS</span><p style="font-size:13.5px;margin:10px 0 0">orchestrator · product-manager · developer · code-reviewer · security/database/design-reviewer · test-engineer · release-gatekeeper</p></div>
-      <div class="card"><span class="badge b-skill">10 SKILLS</span><p style="font-size:13.5px;margin:10px 0 0">advise · retrospect · cleanup · document · wake-up · wrap-up · station · pre-ship + authoring-skills &amp; authoring-subagents (meta)</p></div>
-      <div class="card"><span class="badge b-cmd">12 COMMANDS</span><p style="font-size:13.5px;margin:10px 0 0">feature · bug-fix · run-task · mature/execute/review/test/approve-task · wake-up · wrap-up · task-status · sync-issues</p></div>
+      <div class="card"><span class="badge b-agent">10 AGENTS</span><p style="font-size:13.5px;margin:10px 0 0"><strong>Universal:</strong> code-reviewer · security-reviewer · debugger · test-engineer<br><strong>SDLC spine:</strong> orchestrator · product-manager · developer · release-gatekeeper<br><strong>On-demand domain:</strong> database-reviewer · design-reviewer</p></div>
+      <div class="card"><span class="badge b-skill">15 SKILLS</span><p style="font-size:13.5px;margin:10px 0 0"><strong>8 lifecycle:</strong> advise · retrospect · cleanup · document · wake-up · wrap-up · station · pre-ship<br><strong>7 authoring router:</strong> create-agent-skills · -subagents · -slash-commands · -hooks · -meta-prompts · -plans · debug-like-expert</p></div>
+      <div class="card"><span class="badge b-cmd">32 COMMANDS</span><p style="font-size:13.5px;margin:10px 0 0">thin /slash dispatchers — feature · bug-fix · run-task · mature/execute/review/test/approve-task · create-* · wake-up · wrap-up · …<br><strong>+ 12 consider/</strong> mental models (5-whys · inversion · pareto · …)</p></div>
     </div>
     <div class="grid g4" style="margin-top:18px">
       <div class="card center"><div class="kpi v">★</div><div class="sub">knowledge REGISTRY + advise/retrospect — the #1 asset</div></div>
       <div class="card center"><div class="kpi v">★</div><div class="sub">4-field handoff — converged in 3 repos</div></div>
-      <div class="card center"><div class="kpi v">4</div><div class="sub">authoring templates (AGENT/SKILL/FEATURE/BUG)</div></div>
+      <div class="card center"><div class="kpi v">2</div><div class="sub">payloads: global/ engine + project-seed/ starter</div></div>
       <div class="card center"><div class="kpi v">2</div><div class="sub">pluggable backends: filesystem Kanban or GitHub Issues</div></div>
     </div>
     <p class="note">Domain skills (Next.js, Prisma, design, SEO…) are excellent but ship as optional <strong>stack-packs</strong>, not the universal base. Add a pack per project.</p>
@@ -611,7 +613,7 @@ subdir/CLAUDE.md     <span class="c">(loads ON DEMAND)</span>
 <span class="c">#   design-reviewer → point at the project's locked design source-of-truth</span>
 <span class="c"># 5 · seed knowledge/REGISTRY.md with your project's real lessons</span>
     </div>
-    <p style="margin-top:18px">Your project's CLAUDE.md is the <em>project</em> layer (its invariants, stack, change protocol). Agentic Base Layer supplies the <em>reusable</em> layer beneath it — and steps aside for each project's deliberate overrides.</p>
+    <p style="margin-top:18px"><strong>Install globally once</strong> (the <code>global/</code> engine → <code>~/.claude</code>), then <strong>seed per project</strong> (the <code>project-seed/</code> starter → <code>~/projects/my-app</code>). Your project's CLAUDE.md is the <em>project</em> layer (its invariants, stack, change protocol); Agentic Base Layer supplies the <em>reusable</em> layer beneath it — and steps aside for each project's deliberate overrides.</p>
   </div>
 </section>
 
@@ -635,7 +637,7 @@ subdir/CLAUDE.md     <span class="c">(loads ON DEMAND)</span>
     <div class="center" style="padding:20px 0">
       <h1 style="font-size:clamp(30px,5vw,56px)">Agentic Base Layer<span class="accent">.</span></h1>
       <p class="lead" style="margin:0 auto">Freeze the best once. Fix it once. Reuse it everywhere.</p>
-      <p class="foot" style="margin-top:24px">README.md · CLAUDE.md (seed) · .claude/ · bin/new-project.sh · meta/{SCORING,GAPS,REFERENCE,presentation}</p>
+      <p class="foot" style="margin-top:24px">README.md · install.sh · global/ (engine) · project-seed/ (starter) · bin/new-project.sh · meta/{SCORING,GAPS,REFERENCE,presentation}</p>
     </div>
   </div>
 </section>
